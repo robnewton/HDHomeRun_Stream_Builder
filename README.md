@@ -32,6 +32,7 @@ Choose *Tools > Options* to configure the tool
 
 	1. This is located in the install directory for your silicondust HDHomeRun
 
+
 2. Choose the location of your mc2xml.exe file.
 
 3. Choose the location of your TVGuide Source.db file.
