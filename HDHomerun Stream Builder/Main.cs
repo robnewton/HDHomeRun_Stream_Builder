@@ -252,7 +252,7 @@ namespace HDHomerun_Stream_Builder
 
         public void UpdateTVGuideSettingXML()
         {
-            Log("Updatung TVGuide settings.xml");
+            Log("Updating TVGuide settings.xml");
             LoadTVGuideSettings();
             TVGuideSettings["source"] = "XMLTV";
             SaveTVGuideSettings();
