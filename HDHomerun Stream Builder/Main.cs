@@ -992,27 +992,41 @@ namespace HDHomerun_Stream_Builder
 
         private void previewChannelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ListViewItem item = channelList.SelectedItems[0];
-            if (item == null)
-                return;
-            splitContainer2.Panel2Collapsed = false;
-            //vlcControl1.Stop();
-            Channel c = (Channel)item.Tag;
-            TuneToChannel(c);
-            if(vlcControl1.Media != null) vlcControl1.Media.Dispose();
-            MediaBase media = new PathMedia(string.Format("rtp://@{0}", "rtp://" + GetLocalIP() + ":500" + tuner));
-            vlcControl1.Media = media;
-            vlcControl1.Play();
+            try
+            {
+                ListViewItem item = channelList.SelectedItems[0];
+                if (item == null)
+                    return;
+                splitContainer2.Panel2Collapsed = false;
+                //vlcControl1.Stop();
+                Channel c = (Channel)item.Tag;
+                TuneToChannel(c);
+                if (vlcControl1.Media != null) vlcControl1.Media.Dispose();
+                MediaBase media = new PathMedia(string.Format("rtp://@{0}", GetLocalIP() + ":500" + tuner));
+                vlcControl1.Media = media;
+                vlcControl1.Play();
+            }
+            catch (Exception ex)
+            {
+                Log("Failed to start internal preview for the channel: " + ex.Message);
+            }
         }
 
         private void previewChannelexternalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ListViewItem item = channelList.SelectedItems[0];
-            if (item == null)
-                return;
-            splitContainer2.Panel2Collapsed = true;
-            Channel c = (Channel)item.Tag;
-            TuneToChannel(c, true);
+            try
+            {
+                ListViewItem item = channelList.SelectedItems[0];
+                if (item == null)
+                    return;
+                splitContainer2.Panel2Collapsed = true;
+                Channel c = (Channel)item.Tag;
+                TuneToChannel(c, true);
+            }
+            catch (Exception ex)
+            {
+                Log("Failed to start external preview for the channel: " + ex.Message);
+            }
         }
     }
 }
