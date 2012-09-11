@@ -12,6 +12,8 @@ namespace HDHomerun_Stream_Builder
         public string Id { get; set; }
         public string Number { get; set; }
         public bool Encrypted { get; set; }
+        public bool IsBroadcasting { get; set; }
+        public bool BroadcastingChecked { get; set; }
         public string Callsign { get; set; }
         public int VirtualNumberAsInt
         {

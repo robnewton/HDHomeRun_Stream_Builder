@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using Vlc.DotNet.Core.Medias;
 using System.Net;
 using System.Net.Sockets;
+using Vlc.DotNet.Core;
 
 namespace HDHomerun_Stream_Builder
 {
@@ -113,7 +114,10 @@ namespace HDHomerun_Stream_Builder
             try
             {
                 string channelJson = System.IO.File.ReadAllText(Path.GetDirectoryName(Application.ExecutablePath) + @"\channel_cache.json");
-                channels = JsonConvert.DeserializeObject<List<Channel>>(channelJson);
+                JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
+                jsonSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+                jsonSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                channels = JsonConvert.DeserializeObject<List<Channel>>(channelJson, jsonSettings);
             }
             catch (Exception e) { return false; }
             if (channels.Count > 0)
@@ -473,18 +477,23 @@ namespace HDHomerun_Stream_Builder
         private void RenderChannelList()
         {
             Log("Refreshing channels on the screen");
-            channelList.Items.Clear();
+            this.SuspendLayout();
+            //channelList.Items.Clear();
             for (int i = 0; i < channels.Count; i++)
             {
                 //Update the list view
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = channels[i].VirtualNumber + " - " + channels[i].Name;
                 lvi.Tag = channels[i];
-                lvi.SubItems.AddRange(new string[] { channels[i].Id, channels[i].StreamUrl });
+                lvi.SubItems.AddRange(new string[] { channels[i].Id, channels[i].IsBroadcasting.ToString(), channels[i].StreamUrl });
                 lvi.ToolTipText = channels[i].StreamUrl;
                 lvi.Checked = channels[i].Checked;
-                AddChannelToLV(lvi);
+                if (i > channelList.Items.Count - 1)
+                    AddChannelToLV(lvi);
+                else
+                    channelList.Items[i] = lvi;
             }
+            this.ResumeLayout();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -902,9 +911,13 @@ namespace HDHomerun_Stream_Builder
             return localIP;
         }
 
+        private bool channelLoading = false;
+
         public void TuneToChannel(Channel channel, bool popup = false)
         {
             Log("Tuning to channel: " + channel.VirtualNumber + " - " + channel.Name);
+
+            channelLoading = true;
 
             ProcessStartInfo tune = new ProcessStartInfo();
             tune.FileName = settings.HDHRPath;
@@ -916,7 +929,7 @@ namespace HDHomerun_Stream_Builder
             //hdhomerun_config FFFFFFFF set /tuner0/channel none
             string[] args = { device, "set", "/tuner" + tuner + "/channel", "none" };
             tune.Arguments = String.Join(" ", args);
-            Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
+            //Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
             using (Process process = Process.Start(tune))
             {
                 using (StreamReader reader = process.StandardOutput)
@@ -932,7 +945,7 @@ namespace HDHomerun_Stream_Builder
             //hdhomerun_config FFFFFFFF set /tuner0/channel none
             string[] args3 = { device, "set", "/tuner" + tuner + "/channel", "auto:" + channel.Number };
             tune.Arguments = String.Join(" ", args3);
-            Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
+            //Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
             using (Process process3 = Process.Start(tune))
             {
                 using (StreamReader reader = process3.StandardOutput)
@@ -948,7 +961,7 @@ namespace HDHomerun_Stream_Builder
             //hdhomerun_config FFFFFFFF set /tuner0/channel none
             string[] args2 = { device, "set", "/tuner" + tuner + "/program", channel.ProxyProgram };
             tune.Arguments = String.Join(" ", args2);
-            Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
+            //Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
             using (Process process2 = Process.Start(tune))
             {
                 using (StreamReader reader = process2.StandardOutput)
@@ -964,7 +977,7 @@ namespace HDHomerun_Stream_Builder
             ///tuner0/target rtp://192.168.1.6:5000
             string[] args4 = { device, "set", "/tuner" + tuner + "/target", "rtp://" + GetLocalIP() + ":500" + tuner };
             tune.Arguments = String.Join(" ", args4);
-            Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
+            //Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
             using (Process process4 = Process.Start(tune))
             {
                 using (StreamReader reader = process4.StandardOutput)
@@ -980,12 +993,15 @@ namespace HDHomerun_Stream_Builder
             if (popup)
             {
                 ProcessStartInfo vlc = new ProcessStartInfo();
-                vlc.FileName = @"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe";
+                if (System.IO.Directory.Exists(CommonStrings.LIBVLC_DLLS_PATH_DEFAULT_VALUE_AMD64))
+                    vlc.FileName = CommonStrings.LIBVLC_DLLS_PATH_DEFAULT_VALUE_AMD64 + "vlc.exe";
+                else
+                    vlc.FileName = CommonStrings.LIBVLC_DLLS_PATH_DEFAULT_VALUE_X86 + "vlc.exe";
                 tune.UseShellExecute = false;
                 tune.RedirectStandardOutput = true;
                 string[] args5 = { "-vvv", "rtp://" + GetLocalIP() + ":500" + tuner };
                 vlc.Arguments = String.Join(" ", args5);
-                Log("  exec: \"" + vlc.FileName + "\" " + vlc.Arguments);
+                //Log("  exec: \"" + vlc.FileName + "\" " + vlc.Arguments);
                 Process process = Process.Start(vlc);
             }
         }
@@ -998,7 +1014,6 @@ namespace HDHomerun_Stream_Builder
                 if (item == null)
                     return;
                 splitContainer2.Panel2Collapsed = false;
-                //vlcControl1.Stop();
                 Channel c = (Channel)item.Tag;
                 TuneToChannel(c);
                 if (vlcControl1.Media != null) vlcControl1.Media.Dispose();
@@ -1027,6 +1042,143 @@ namespace HDHomerun_Stream_Builder
             {
                 Log("Failed to start external preview for the channel: " + ex.Message);
             }
+        }
+
+        private int positionChangedCount = 0;
+
+        private void vlcControl1_Playing(object sender, EventArgs e)
+        {
+            //Log("   Playing");
+            positionChangedCount = 0;
+            this.vlcControl1.PositionChanged += new Vlc.DotNet.Core.VlcEventHandler<Vlc.DotNet.Forms.VlcControl, float>(this.vlcControl1_PositionChanged);
+        }
+
+        private void vlcControl1_PositionChanged(Vlc.DotNet.Forms.VlcControl sender, System.EventArgs args)
+        {
+            try
+            {
+                if (selectedChannel == null)
+                    return;
+                //Log("   Looking for audio stream...");
+                if (vlcControl1.Media.Statistics.DecodedAudio > 0)
+                {
+                    Log("Observed decoded audio (" + vlcControl1.Media.Statistics.DecodedAudio.ToString() + "). Channel is broadcasting.");
+                    selectedChannel.BroadcastingChecked = true;
+                    selectedChannel.IsBroadcasting = true;
+                    this.vlcControl1.PositionChanged -= new Vlc.DotNet.Core.VlcEventHandler<Vlc.DotNet.Forms.VlcControl, float>(this.vlcControl1_PositionChanged);
+                    channelLoading = false;
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Position changed failure: " + ex.Message);
+            }
+            finally
+            {
+                if (positionChangedCount > 5)
+                {
+                    Log("Timed out looking for audio stream. Channel is NOT broadcasting.");
+                    this.vlcControl1.PositionChanged -= new Vlc.DotNet.Core.VlcEventHandler<Vlc.DotNet.Forms.VlcControl, float>(this.vlcControl1_PositionChanged);
+                    channelLoading = false;
+                    selectedChannel.BroadcastingChecked = true;
+                }
+                positionChangedCount++;
+            }
+        }
+
+        private Channel selectedChannel = null;
+
+        private void channelList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                ListViewItem item = channelList.SelectedItems[0];
+                if (item == null)
+                    return;
+                selectedChannel = (Channel)item.Tag;
+            } catch (Exception ex) { }
+        }
+
+        private void CheckForBroadcast()
+        {
+            int i = 0;
+            int waitingCount = 0;
+            while ((!backgroundWorker1.CancellationPending) && (i < channels.Count) && (!channelLoading))
+            {
+                if (!channelLoading)
+                {
+                    selectedChannel = channels[i];
+                    if (selectedChannel.BroadcastingChecked || selectedChannel.IsBroadcasting)
+                    {
+                        //Log("Skipping channel (broadcasting already checked): " + selectedChannel.Name);
+                    }
+                    else
+                    {
+                        StatusMessage.Text = "Checking channel for at least an audio stream: " + selectedChannel.Name;
+                        backgroundWorker1.ReportProgress((100 * (i + 1)) / channelList.Items.Count);
+                        TuneToChannel(selectedChannel);
+                        if (vlcControl1.Media != null) vlcControl1.Media.Dispose();
+                        vlcControl1.Media = new PathMedia(string.Format("rtp://@{0}", GetLocalIP() + ":500" + tuner));
+                        vlcControl1.Play();
+                        waitingCount = 0;
+                    }
+                    selectedChannel.BroadcastingChecked = true;
+                    i++;
+                }
+                else
+                {
+                    Thread.Sleep(1000);
+                    waitingCount++;
+                    if (waitingCount > 5)
+                        channelLoading = false;
+                }
+            }
+        }
+
+        private void scanForBroadcastingChannelsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cancelProcessButton.Enabled = true;
+            backgroundWorker1.RunWorkerAsync();
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            CheckForBroadcast();
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            toolStripProgressBar1.Value = e.ProgressPercentage;
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            cancelProcessButton.Enabled = false;
+            toolStripProgressBar1.Value = 0;
+            StatusMessage.Text = "";
+            CacheChannels();
+            RenderChannelList();
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            backgroundWorker1.CancelAsync();
+            CacheChannels();
+        }
+
+        private void FilterBroadcastingOnly()
+        {
+            foreach (ListViewItem item in channelList.Items)
+            {
+                Channel c = (Channel)item.Tag;
+                item.Checked = c.IsBroadcasting;
+            }
+        }
+
+        private void toolStripButton4_Click_1(object sender, EventArgs e)
+        {
+            FilterBroadcastingOnly();
         }
     }
 }

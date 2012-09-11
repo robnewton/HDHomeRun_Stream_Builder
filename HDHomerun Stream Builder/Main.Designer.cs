@@ -32,11 +32,13 @@
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "Channel Name Here",
             "ID Here",
+            "True",
             "URL Here"}, -1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.channelList = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.checkSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +57,10 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.device_tb = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.cancelProcessButton = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +83,7 @@
             this.scanFromScanOutputTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAChannelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearChannelsAndCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scanForBroadcastingChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,6 +92,10 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.vlcControl1 = new Vlc.DotNet.Forms.VlcControl();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.StatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -96,6 +107,7 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // channelList
@@ -104,19 +116,22 @@
             this.channelList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader3,
+            this.columnHeader4,
             this.columnHeader2});
             this.channelList.ContextMenuStrip = this.contextMenuStrip1;
             this.channelList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.channelList.FullRowSelect = true;
             listViewItem1.StateImageIndex = 0;
             this.channelList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1});
             this.channelList.Location = new System.Drawing.Point(0, 0);
             this.channelList.Name = "channelList";
-            this.channelList.Size = new System.Drawing.Size(275, 341);
+            this.channelList.Size = new System.Drawing.Size(275, 325);
             this.channelList.TabIndex = 0;
             this.channelList.UseCompatibleStateImageBehavior = false;
             this.channelList.View = System.Windows.Forms.View.Details;
             this.channelList.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.channelList_ItemChecked);
+            this.channelList.SelectedIndexChanged += new System.EventHandler(this.channelList_SelectedIndexChanged);
             this.channelList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.channelList_MouseDown);
             // 
             // columnHeader1
@@ -128,6 +143,11 @@
             // 
             this.columnHeader3.Text = "Id";
             this.columnHeader3.Width = 132;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Broadcasting";
+            this.columnHeader4.Width = 75;
             // 
             // columnHeader2
             // 
@@ -143,7 +163,7 @@
             this.previewChannelToolStripMenuItem,
             this.previewChannelexternalToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(215, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(215, 114);
             // 
             // checkSelectionToolStripMenuItem
             // 
@@ -192,7 +212,11 @@
             this.toolStripButton2,
             this.toolStripSeparator4,
             this.device_tb,
-            this.toolStripLabel2});
+            this.toolStripLabel2,
+            this.toolStripSeparator5,
+            this.toolStripButton4,
+            this.toolStripSeparator6,
+            this.cancelProcessButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(869, 25);
@@ -204,8 +228,8 @@
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(106, 22);
-            this.toolStripButton1.Text = "Select HD Only";
+            this.toolStripButton1.Size = new System.Drawing.Size(44, 22);
+            this.toolStripButton1.Text = "HD";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripSeparator1
@@ -219,8 +243,8 @@
             this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(100, 22);
-            this.toolStripButton3.Text = "Preview Panel";
+            this.toolStripButton3.Size = new System.Drawing.Size(68, 22);
+            this.toolStripButton3.Text = "Preview";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripSeparator3
@@ -257,8 +281,8 @@
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(141, 22);
-            this.toolStripButton2.Text = "Select Channel Range";
+            this.toolStripButton2.Size = new System.Drawing.Size(60, 22);
+            this.toolStripButton2.Text = "Range";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripSeparator4
@@ -281,6 +305,35 @@
             this.toolStripLabel2.Name = "toolStripLabel2";
             this.toolStripLabel2.Size = new System.Drawing.Size(42, 22);
             this.toolStripLabel2.Text = "Device";
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(96, 22);
+            this.toolStripButton4.Text = "Broadcasting";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click_1);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            // 
+            // cancelProcessButton
+            // 
+            this.cancelProcessButton.Enabled = false;
+            this.cancelProcessButton.Image = ((System.Drawing.Image)(resources.GetObject("cancelProcessButton.Image")));
+            this.cancelProcessButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cancelProcessButton.Name = "cancelProcessButton";
+            this.cancelProcessButton.Size = new System.Drawing.Size(106, 22);
+            this.cancelProcessButton.Text = "Cancel Process";
+            this.cancelProcessButton.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // menuStrip1
             // 
@@ -423,7 +476,8 @@
             this.refreshChannelDataToolStripMenuItem,
             this.scanFromScanOutputTXTToolStripMenuItem,
             this.addAChannelToolStripMenuItem,
-            this.clearChannelsAndCacheToolStripMenuItem});
+            this.clearChannelsAndCacheToolStripMenuItem,
+            this.scanForBroadcastingChannelsToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
             this.advancedToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.advancedToolStripMenuItem.Text = "Advanced";
@@ -456,6 +510,13 @@
             this.clearChannelsAndCacheToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
             this.clearChannelsAndCacheToolStripMenuItem.Text = "Clear Channels and Cache";
             this.clearChannelsAndCacheToolStripMenuItem.Click += new System.EventHandler(this.clearChannelsAndCacheToolStripMenuItem_Click);
+            // 
+            // scanForBroadcastingChannelsToolStripMenuItem
+            // 
+            this.scanForBroadcastingChannelsToolStripMenuItem.Name = "scanForBroadcastingChannelsToolStripMenuItem";
+            this.scanForBroadcastingChannelsToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
+            this.scanForBroadcastingChannelsToolStripMenuItem.Text = "Scan for Broadcasting Channels";
+            this.scanForBroadcastingChannelsToolStripMenuItem.Click += new System.EventHandler(this.scanForBroadcastingChannelsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
@@ -492,7 +553,7 @@
             this.log.Multiline = true;
             this.log.Name = "log";
             this.log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.log.Size = new System.Drawing.Size(869, 138);
+            this.log.Size = new System.Drawing.Size(869, 132);
             this.log.TabIndex = 3;
             // 
             // splitContainer1
@@ -509,8 +570,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.log);
-            this.splitContainer1.Size = new System.Drawing.Size(869, 483);
-            this.splitContainer1.SplitterDistance = 341;
+            this.splitContainer1.Size = new System.Drawing.Size(869, 461);
+            this.splitContainer1.SplitterDistance = 325;
             this.splitContainer1.TabIndex = 4;
             // 
             // splitContainer2
@@ -527,19 +588,50 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.vlcControl1);
-            this.splitContainer2.Size = new System.Drawing.Size(869, 341);
+            this.splitContainer2.Size = new System.Drawing.Size(869, 325);
             this.splitContainer2.SplitterDistance = 275;
             this.splitContainer2.TabIndex = 1;
             // 
             // vlcControl1
             // 
+            this.vlcControl1.BackColor = System.Drawing.SystemColors.ControlText;
             this.vlcControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.vlcControl1.Location = new System.Drawing.Point(0, 0);
             this.vlcControl1.Name = "vlcControl1";
             this.vlcControl1.Rate = 0F;
-            this.vlcControl1.Size = new System.Drawing.Size(590, 341);
+            this.vlcControl1.Size = new System.Drawing.Size(590, 325);
             this.vlcControl1.TabIndex = 0;
             this.vlcControl1.Text = "vlcControl1";
+            this.vlcControl1.Playing += new Vlc.DotNet.Core.VlcEventHandler<Vlc.DotNet.Forms.VlcControl, System.EventArgs>(this.vlcControl1_Playing);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripProgressBar1,
+            this.StatusMessage});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 510);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(869, 22);
+            this.statusStrip1.TabIndex = 5;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
+            // 
+            // StatusMessage
+            // 
+            this.StatusMessage.Name = "StatusMessage";
+            this.StatusMessage.Size = new System.Drawing.Size(0, 17);
             // 
             // Main
             // 
@@ -547,6 +639,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(869, 532);
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -566,6 +659,8 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -624,6 +719,16 @@
         private System.Windows.Forms.ToolStripMenuItem previewChannelToolStripMenuItem;
         private Vlc.DotNet.Forms.VlcControl vlcControl1;
         private System.Windows.Forms.ToolStripMenuItem previewChannelexternalToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ToolStripMenuItem scanForBroadcastingChannelsToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripStatusLabel StatusMessage;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripButton cancelProcessButton;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
     }
 }
 
