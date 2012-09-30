@@ -13,6 +13,7 @@ namespace HDHomerun_Stream_Builder
         public string Device { get; set; }
         public string Tuner { get; set; }
         public string StrmFilePath { get; set; }
+        public string PseudoTVSettingsPath { get; set; }
         public bool IgnoreAllEncrypted { get; set; }
         public bool IgnoreZeroProgram { get; set; }
 

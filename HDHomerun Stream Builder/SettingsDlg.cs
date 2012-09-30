@@ -44,6 +44,17 @@ namespace HDHomerun_Stream_Builder
             else
                 strmFileDirectory.Text = new DirectoryInfo(System.Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory)).Parent.FullName;
 
+            if (!Utils.Empty(Settings.PseudoTVSettingsPath))
+                pseudotvSettingsPath.Text = Settings.PseudoTVSettingsPath;
+            else
+            {
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\XBMC\userdata\addon_data\script.pseudotv\settings2.xml";
+                if (new FileInfo(path).Exists)
+                    pseudotvSettingsPath.Text = path;
+                else
+                    pseudotvSettingsPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            }
+
             ignoreAllEncrypted.Checked = Settings.IgnoreAllEncrypted;
             ignoreZeroProgram.Checked = Settings.IgnoreZeroProgram;
         }
@@ -83,6 +94,16 @@ namespace HDHomerun_Stream_Builder
             get
             {
                 return strmFileDirectory.Text;
+            }
+            private set { }
+        }
+
+
+        public string PseudoTVSettingsPath
+        {
+            get
+            {
+                return pseudotvSettingsPath.Text;
             }
             private set { }
         }
@@ -157,6 +178,19 @@ namespace HDHomerun_Stream_Builder
             DialogResult result = folderBrowserDialog1.ShowDialog();
             if (result == DialogResult.OK)
                 strmFileDirectory.Text = folderBrowserDialog1.SelectedPath; 
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                openFileDialog1.InitialDirectory = new FileInfo(pseudotvSettingsPath.Text).DirectoryName;
+            }
+            catch (Exception ex) { }
+            openFileDialog1.FileName = "";
+            DialogResult result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+                pseudotvSettingsPath.Text = openFileDialog1.FileName; 
         }
     }
 }

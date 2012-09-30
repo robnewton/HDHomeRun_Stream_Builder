@@ -186,8 +186,9 @@ namespace HDHomerun_Stream_Builder
             xmltv.RedirectStandardOutput = true;
             xmltv.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             xmltv.CreateNoWindow = true;
-            string[] args = { "-f", "-o", "\"" + new FileInfo(settings.MC2XMLPath).Directory + @"\xmltv.xml" + "\"" };
+            string[] args = { "-f", "-d 4", "-s -4", "-o \"" + new FileInfo(settings.MC2XMLPath).Directory + @"\xmltv.xml" + "\"", "-C \"" + new FileInfo(settings.MC2XMLPath).Directory + @"\mc2xml.chl" + "\"", "-D \"" + new FileInfo(settings.MC2XMLPath).Directory + @"\mc2xml.dat" + "\"" };
             xmltv.Arguments = String.Join(" ", args);
+            Log(settings.MC2XMLPath + " " + xmltv.Arguments);
             using (Process process = Process.Start(xmltv))
             {
                 using (StreamReader reader = process.StandardOutput)
@@ -766,6 +767,7 @@ namespace HDHomerun_Stream_Builder
                 settings.IgnoreAllEncrypted = settingsDlg.IgnoreAllEncrypted;
                 settings.IgnoreZeroProgram = settingsDlg.IgnoreZeroProgram;
                 settings.StrmFilePath = settingsDlg.StrmFilePath;
+                settings.PseudoTVSettingsPath = settingsDlg.PseudoTVSettingsPath;
                 CacheSettings();
             }
         }
@@ -881,11 +883,14 @@ namespace HDHomerun_Stream_Builder
 
             if (e.Button == MouseButtons.Right)
             {
-                listView.SelectedItems.Clear();
-                ListViewItem item = listView.GetItemAt(e.X, e.Y);
-                if (item != null)
+                if (listView.SelectedItems.Count < 2)
                 {
-                    item.Selected = true;
+                    listView.SelectedItems.Clear();
+                    ListViewItem item = listView.GetItemAt(e.X, e.Y);
+                    if (item != null)
+                    {
+                        item.Selected = true;
+                    }
                 }
             }
         }
@@ -945,7 +950,7 @@ namespace HDHomerun_Stream_Builder
             //hdhomerun_config FFFFFFFF set /tuner0/channel none
             string[] args3 = { device, "set", "/tuner" + tuner + "/channel", "auto:" + channel.Number };
             tune.Arguments = String.Join(" ", args3);
-            //Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
+            Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
             using (Process process3 = Process.Start(tune))
             {
                 using (StreamReader reader = process3.StandardOutput)
@@ -961,7 +966,7 @@ namespace HDHomerun_Stream_Builder
             //hdhomerun_config FFFFFFFF set /tuner0/channel none
             string[] args2 = { device, "set", "/tuner" + tuner + "/program", channel.ProxyProgram };
             tune.Arguments = String.Join(" ", args2);
-            //Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
+            Log("  exec: \"" + settings.HDHRPath + "\" " + tune.Arguments);
             using (Process process2 = Process.Start(tune))
             {
                 using (StreamReader reader = process2.StandardOutput)
@@ -1179,6 +1184,54 @@ namespace HDHomerun_Stream_Builder
         private void toolStripButton4_Click_1(object sender, EventArgs e)
         {
             FilterBroadcastingOnly();
+        }
+
+        private void configureUsingFavoriteChannelsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CacheChannels();
+            writeCHLFavoritesFile();
+            BuildFavoritesXMLTVFile();
+            System.IO.File.Copy(new FileInfo(settings.MC2XMLPath).Directory + @"\xmltv.xml", new FileInfo(settings.PseudoTVSettingsPath).Directory + @"\xmltv.xml", true);
+            ConfigurePseudoTV();
+        }
+
+        public void ConfigurePseudoTV()
+        {
+            Log("Checking for the PseudoTV settings2.xml file");
+
+            if (!System.IO.File.Exists(settings.PseudoTVSettingsPath))
+            {
+                Log("   settings2.xml file not found at: " + new FileInfo(settings.PseudoTVSettingsPath).Directory + @"\settings2.xml");
+                Log("Failed PseudoTV configuration");
+                return;
+            }
+            else
+            {
+                Log("   settings2.xml file found at: " + new FileInfo(settings.PseudoTVSettingsPath).Directory + @"\settings2.xml");
+            }
+
+            Log("Rewriting settings2.xml. Any custom configurations will be lost.");
+
+            string xml = "<settings>\r\n";
+            xml += String.Format("    <setting id=\"{0}\" value=\"{1}\" />\r\n", "Version", "2.1.0");
+            xml += String.Format("    <setting id=\"{0}\" value=\"{1}\" />\r\n", "LastResetTime", "1348973650");
+            xml += String.Format("    <setting id=\"{0}\" value=\"{1}\" />\r\n", "LastExitTime", "1348975256");
+            foreach (Channel c in channels)
+            {
+                if (c.Checked)
+                {
+                    xml += String.Format("    <setting id=\"Channel_{0}_type\" value=\"{1}\" />\r\n", c.VirtualNumber, 8);
+                    xml += String.Format("    <setting id=\"Channel_{0}_1\" value=\"{1}\" />\r\n", c.VirtualNumber, c.Id);
+                    xml += String.Format("    <setting id=\"Channel_{0}_2\" value=\"{1}\" />\r\n", c.VirtualNumber, c.StreamUrl);
+                    xml += String.Format("    <setting id=\"Channel_{0}_changed\" value=\"{1}\" />\r\n", c.VirtualNumber, "true");
+                    xml += String.Format("    <setting id=\"Channel_{0}_time\" value=\"{1}\" />\r\n", c.VirtualNumber, 1748);
+                    xml += String.Format("    <setting id=\"Channel_{0}_rulecount\" value=\"{1}\" />\r\n", c.VirtualNumber, 0);
+                }
+            }
+            xml += "</settings>";
+            System.IO.File.WriteAllText(settings.PseudoTVSettingsPath, xml);
+
+            Log("Done updating PseudoTV!");
         }
     }
 }

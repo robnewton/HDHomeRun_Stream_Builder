@@ -77,6 +77,8 @@
             this.buildXMLTVFileForFavoritesOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tVGuideAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rewriteChannelStreamPathsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pseudoTVAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configureUsingFavoriteChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshChannelDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -407,6 +409,7 @@
             this.toolStripMenuItem2,
             this.xmlTVToolStripMenuItem,
             this.tVGuideAddonToolStripMenuItem,
+            this.pseudoTVAddonToolStripMenuItem,
             this.toolStripMenuItem3,
             this.advancedToolStripMenuItem,
             this.toolStripMenuItem4,
@@ -418,14 +421,14 @@
             // scanChannelsToolStripMenuItem
             // 
             this.scanChannelsToolStripMenuItem.Name = "scanChannelsToolStripMenuItem";
-            this.scanChannelsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.scanChannelsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.scanChannelsToolStripMenuItem.Text = "Scan Channels";
             this.scanChannelsToolStripMenuItem.Click += new System.EventHandler(this.scanChannelsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(155, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(163, 6);
             // 
             // xmlTVToolStripMenuItem
             // 
@@ -433,7 +436,7 @@
             this.writeFavoriteChannelsFilechlToolStripMenuItem,
             this.buildXMLTVFileForFavoritesOnlyToolStripMenuItem});
             this.xmlTVToolStripMenuItem.Name = "xmlTVToolStripMenuItem";
-            this.xmlTVToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.xmlTVToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.xmlTVToolStripMenuItem.Text = "XMLTV";
             // 
             // writeFavoriteChannelsFilechlToolStripMenuItem
@@ -455,7 +458,7 @@
             this.tVGuideAddonToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rewriteChannelStreamPathsToolStripMenuItem});
             this.tVGuideAddonToolStripMenuItem.Name = "tVGuideAddonToolStripMenuItem";
-            this.tVGuideAddonToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.tVGuideAddonToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.tVGuideAddonToolStripMenuItem.Text = "TVGuide Addon";
             // 
             // rewriteChannelStreamPathsToolStripMenuItem
@@ -465,10 +468,25 @@
             this.rewriteChannelStreamPathsToolStripMenuItem.Text = "Configure Using Favorite Channels";
             this.rewriteChannelStreamPathsToolStripMenuItem.Click += new System.EventHandler(this.updateTVGuideAddonStreamsToolStripMenuItem_Click);
             // 
+            // pseudoTVAddonToolStripMenuItem
+            // 
+            this.pseudoTVAddonToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.configureUsingFavoriteChannelsToolStripMenuItem});
+            this.pseudoTVAddonToolStripMenuItem.Name = "pseudoTVAddonToolStripMenuItem";
+            this.pseudoTVAddonToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.pseudoTVAddonToolStripMenuItem.Text = "PseudoTV Addon";
+            // 
+            // configureUsingFavoriteChannelsToolStripMenuItem
+            // 
+            this.configureUsingFavoriteChannelsToolStripMenuItem.Name = "configureUsingFavoriteChannelsToolStripMenuItem";
+            this.configureUsingFavoriteChannelsToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.configureUsingFavoriteChannelsToolStripMenuItem.Text = "Configure Using Favorite Channels";
+            this.configureUsingFavoriteChannelsToolStripMenuItem.Click += new System.EventHandler(this.configureUsingFavoriteChannelsToolStripMenuItem_Click);
+            // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(155, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(163, 6);
             // 
             // advancedToolStripMenuItem
             // 
@@ -479,7 +497,7 @@
             this.clearChannelsAndCacheToolStripMenuItem,
             this.scanForBroadcastingChannelsToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.advancedToolStripMenuItem.Text = "Advanced";
             // 
             // refreshChannelDataToolStripMenuItem
@@ -521,12 +539,12 @@
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(155, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(163, 6);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.optionsToolStripMenuItem.Text = "Settings";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -729,6 +747,8 @@
         private System.Windows.Forms.ToolStripButton cancelProcessButton;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem pseudoTVAddonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configureUsingFavoriteChannelsToolStripMenuItem;
     }
 }
 
