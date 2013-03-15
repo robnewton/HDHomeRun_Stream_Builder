@@ -8,6 +8,7 @@ namespace HDHomerun_Stream_Builder
     public class Settings
     {
         public string HDHRPath { get; set; }
+        public string HDHRDMS { get; set; }
         public string MC2XMLPath { get; set; }
         public string TVGuidePath { get; set; }
         public string Device { get; set; }

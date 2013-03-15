@@ -513,7 +513,7 @@ namespace HDHomerun_Stream_Builder
             }
         }
 
-        public void ConfigureTVGuide()
+        public void ConfigureTVGuide(bool useUPnPStreamUrl = false)
         {
             Log("Checking for the source.db and settings.xml files");
 
@@ -572,7 +572,20 @@ namespace HDHomerun_Stream_Builder
                     //Custom streams insert data
                     Dictionary<String, String> streamData = new Dictionary<String, String>();
                     streamData.Add("CHANNEL", channel.Id);
-                    streamData.Add("STREAM_URL", StrmDirectory + channel.Filename);
+                    if (!useUPnPStreamUrl)
+                    {
+                        streamData.Add("STREAM_URL", StrmDirectory + channel.Filename);
+                    }
+                    else
+                    {
+                        string uuid = "missing-uuid-configuration";
+                        try 
+	                    {
+                            uuid = settings.HDHRDMS.Split('|')[1];
+	                    }
+	                    catch (Exception){}
+                        streamData.Add("STREAM_URL", "upnp://" + uuid + "/CableTV%2fv" + channel.VirtualNumber);
+                    }
 
                     //Sources update
                     Dictionary<String, String> xmltvSourceUpdate = new Dictionary<String, String> { { "CHANNELS_UPDATED", "current_timestamp" } };
@@ -582,7 +595,7 @@ namespace HDHomerun_Stream_Builder
                     {
                         db.Insert("CHANNELS", channelData);
                         db.Insert("CUSTOM_STREAM_URL", streamData);
-                        Log("   Wrote channel: " + channel.VirtualNumber + " - " + channel.Callsign + " With stream path: " + StrmDirectory + channel.Filename);
+                        Log("   Wrote channel: " + channel.VirtualNumber + " - " + channel.Callsign + " With stream path: " + streamData["STREAM_URL"]);
                     }
                     catch (Exception crap)
                     {
@@ -762,6 +775,7 @@ namespace HDHomerun_Stream_Builder
                     settings = new Settings();
                 }
                 settings.HDHRPath = settingsDlg.HDHRInstallPath;
+                settings.HDHRDMS = settingsDlg.HDHRDMS;
                 settings.MC2XMLPath = settingsDlg.MC2XMLInstallPath;
                 settings.TVGuidePath = settingsDlg.TVGuideInstallPath;
                 settings.IgnoreAllEncrypted = settingsDlg.IgnoreAllEncrypted;
@@ -1232,6 +1246,12 @@ namespace HDHomerun_Stream_Builder
             System.IO.File.WriteAllText(settings.PseudoTVSettingsPath, xml);
 
             Log("Done updating PseudoTV!");
+        }
+
+        private void configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CacheChannels();
+            ConfigureTVGuide(useUPnPStreamUrl: true);
         }
     }
 }

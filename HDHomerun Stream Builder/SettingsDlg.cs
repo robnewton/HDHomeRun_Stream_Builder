@@ -7,11 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using ManagedUPnP;
 
 namespace HDHomerun_Stream_Builder
 {
     public partial class SettingsDlg : Form
     {
+        /// <summary>
+        /// Handles discovery of the services.
+        /// </summary>
+        private AutoEventedDiscoveryServices<Service> mdsServices;
+
+        HashSet<String> ldDevices = new HashSet<String>();
+
         Settings Settings = new Settings();
         public SettingsDlg(Settings inbound)
         {
@@ -55,6 +63,13 @@ namespace HDHomerun_Stream_Builder
                     pseudotvSettingsPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             }
 
+            if (!Utils.Empty(Settings.HDHRDMS))
+                hdhrDmsDevice.Text = Settings.HDHRDMS;
+            else
+            {
+                hdhrDmsDevice.Text = "";
+            }
+
             ignoreAllEncrypted.Checked = Settings.IgnoreAllEncrypted;
             ignoreZeroProgram.Checked = Settings.IgnoreZeroProgram;
         }
@@ -64,6 +79,15 @@ namespace HDHomerun_Stream_Builder
             get
             {
                 return hdhrInstallPath.Text;
+            }
+            private set { }
+        }
+
+        public string HDHRDMS
+        {
+            get
+            {
+                return hdhrDmsDevice.Text;
             }
             private set { }
         }
@@ -191,6 +215,72 @@ namespace HDHomerun_Stream_Builder
             DialogResult result = openFileDialog1.ShowDialog();
             if (result == DialogResult.OK)
                 pseudotvSettingsPath.Text = openFileDialog1.FileName; 
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            ldDevices = new HashSet<String>();
+
+            // Create discovery for all service and device types
+            mdsServices = new AutoEventedDiscoveryServices<Service>(null);
+
+            // Try to resolve network interfaces if OS supports it
+            mdsServices.ResolveNetworkInterfaces = true;
+
+            // Assign events
+            mdsServices.CanCreateServiceFor += new AutoEventedDiscoveryServices<Service>.
+                CanCreateServiceForEventHandler(dsServices_CanCreateServiceFor);
+
+            mdsServices.CreateServiceFor += new AutoEventedDiscoveryServices<Service>.
+                CreateServiceForEventHandler(dsServices_CreateServiceFor);
+
+            mdsServices.StatusNotifyAction += new AutoEventedDiscoveryServices<Service>.
+                StatusNotifyActionEventHandler(dsServices_StatusNotifyAction);
+
+            ManagedUPnP.WindowsFirewall.CheckUPnPFirewallRules(null);
+
+            // Start async discovery
+            mdsServices.ReStartAsync();
+        }
+
+        /// <summary>
+        /// Occurs when the discovery object needs to determine if an auto service can be created.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="a">The event arguments.</param>
+        private void dsServices_CanCreateServiceFor(object sender, AutoEventedDiscoveryServices<Service>.CanCreateServiceForEventArgs a)
+        {
+            a.CanCreate = true;
+        }
+
+        /// <summary>
+        /// Occurs when the discovery object wants a new auto service created.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="a">The event arguments.</param>
+        private void dsServices_CreateServiceFor(object sender, AutoEventedDiscoveryServices<Service>.CreateServiceForEventArgs a)
+        {
+            a.CreatedAutoService = a.Service;
+        }
+
+        /// <summary>
+        /// Occurs when a notify action occurs for the dicovery object.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="a">The event arguments.</param>
+        private void dsServices_StatusNotifyAction(object sender, AutoEventedDiscoveryServices<Service>.StatusNotifyActionEventArgs a)
+        {
+            switch (a.NotifyAction)
+            {
+                case AutoDiscoveryServices<Service>.NotifyAction.ServiceAdded:
+                    // A new service was found, add it
+                    Service s = (Service)(a.Data);
+                    if (ldDevices.Add(s.Device.UniqueDeviceName))
+                    {
+                        hdhrDmsDevice.Items.Add(s.Device.FriendlyName + "|" + s.Device.UniqueDeviceName.Replace("uuid:",""));
+                    }
+                    break;
+            }
         }
     }
 }

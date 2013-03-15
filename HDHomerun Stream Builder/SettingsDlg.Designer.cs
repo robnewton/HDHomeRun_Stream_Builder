@@ -55,6 +55,9 @@
             this.button5 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.pseudotvSettingsPath = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
+            this.hdhrDmsDevice = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -67,7 +70,7 @@
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(581, 368);
+            this.cancel.Location = new System.Drawing.Point(581, 404);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 23);
             this.cancel.TabIndex = 3;
@@ -78,7 +81,7 @@
             // 
             this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(500, 368);
+            this.ok.Location = new System.Drawing.Point(500, 404);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(75, 23);
             this.ok.TabIndex = 2;
@@ -98,12 +101,15 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.hdhrDmsDevice);
+            this.groupBox1.Controls.Add(this.button6);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.hdhrInstallPath);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(644, 53);
+            this.groupBox1.Size = new System.Drawing.Size(644, 80);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Silicondust HDHomerun";
@@ -135,7 +141,7 @@
             this.groupBox2.Controls.Add(this.button2);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.mc2xmlInstallPath);
-            this.groupBox2.Location = new System.Drawing.Point(12, 71);
+            this.groupBox2.Location = new System.Drawing.Point(12, 98);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(644, 53);
             this.groupBox2.TabIndex = 3;
@@ -178,7 +184,7 @@
             this.groupBox3.Controls.Add(this.button3);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.tvguideInstallPath);
-            this.groupBox3.Location = new System.Drawing.Point(12, 130);
+            this.groupBox3.Location = new System.Drawing.Point(12, 157);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(644, 53);
             this.groupBox3.TabIndex = 3;
@@ -226,7 +232,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.ignoreZeroProgram);
             this.groupBox4.Controls.Add(this.ignoreAllEncrypted);
-            this.groupBox4.Location = new System.Drawing.Point(12, 189);
+            this.groupBox4.Location = new System.Drawing.Point(12, 216);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(644, 53);
             this.groupBox4.TabIndex = 3;
@@ -260,7 +266,7 @@
             this.groupBox5.Controls.Add(this.button4);
             this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.strmFileDirectory);
-            this.groupBox5.Location = new System.Drawing.Point(12, 248);
+            this.groupBox5.Location = new System.Drawing.Point(12, 275);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(644, 53);
             this.groupBox5.TabIndex = 3;
@@ -303,7 +309,7 @@
             this.groupBox6.Controls.Add(this.button5);
             this.groupBox6.Controls.Add(this.label5);
             this.groupBox6.Controls.Add(this.pseudotvSettingsPath);
-            this.groupBox6.Location = new System.Drawing.Point(12, 307);
+            this.groupBox6.Location = new System.Drawing.Point(12, 334);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(644, 53);
             this.groupBox6.TabIndex = 3;
@@ -339,11 +345,39 @@
             this.pseudotvSettingsPath.Size = new System.Drawing.Size(387, 20);
             this.pseudotvSettingsPath.TabIndex = 0;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(7, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(129, 13);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "UPnP HDHomeRun DMS";
+            // 
+            // button6
+            // 
+            this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button6.Location = new System.Drawing.Point(558, 47);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 5;
+            this.button6.Text = "Discover";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // hdhrDmsDevice
+            // 
+            this.hdhrDmsDevice.FormattingEnabled = true;
+            this.hdhrDmsDevice.Location = new System.Drawing.Point(165, 47);
+            this.hdhrDmsDevice.Name = "hdhrDmsDevice";
+            this.hdhrDmsDevice.Size = new System.Drawing.Size(387, 21);
+            this.hdhrDmsDevice.TabIndex = 6;
+            // 
             // SettingsDlg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(668, 403);
+            this.ClientSize = new System.Drawing.Size(668, 439);
             this.ControlBox = false;
             this.Controls.Add(this.ok);
             this.Controls.Add(this.cancel);
@@ -402,5 +436,8 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox pseudotvSettingsPath;
+        private System.Windows.Forms.ComboBox hdhrDmsDevice;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Label label6;
     }
 }

@@ -77,6 +77,7 @@
             this.buildXMLTVFileForFavoritesOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tVGuideAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rewriteChannelStreamPathsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pseudoTVAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureUsingFavoriteChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
@@ -456,7 +457,8 @@
             // tVGuideAddonToolStripMenuItem
             // 
             this.tVGuideAddonToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.rewriteChannelStreamPathsToolStripMenuItem});
+            this.rewriteChannelStreamPathsToolStripMenuItem,
+            this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem});
             this.tVGuideAddonToolStripMenuItem.Name = "tVGuideAddonToolStripMenuItem";
             this.tVGuideAddonToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.tVGuideAddonToolStripMenuItem.Text = "TVGuide Addon";
@@ -464,9 +466,16 @@
             // rewriteChannelStreamPathsToolStripMenuItem
             // 
             this.rewriteChannelStreamPathsToolStripMenuItem.Name = "rewriteChannelStreamPathsToolStripMenuItem";
-            this.rewriteChannelStreamPathsToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+            this.rewriteChannelStreamPathsToolStripMenuItem.Size = new System.Drawing.Size(341, 22);
             this.rewriteChannelStreamPathsToolStripMenuItem.Text = "Configure Using Favorite Channels";
             this.rewriteChannelStreamPathsToolStripMenuItem.Click += new System.EventHandler(this.updateTVGuideAddonStreamsToolStripMenuItem_Click);
+            // 
+            // configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem
+            // 
+            this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem.Name = "configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem";
+            this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem.Size = new System.Drawing.Size(341, 22);
+            this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem.Text = "Configure Using Favorite Channels (UPnP streams)";
+            this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem.Click += new System.EventHandler(this.configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem_Click);
             // 
             // pseudoTVAddonToolStripMenuItem
             // 
@@ -749,6 +758,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem pseudoTVAddonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configureUsingFavoriteChannelsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configureUsingFavoriteChannelsUPnPStreamsToolStripMenuItem;
     }
 }
 
